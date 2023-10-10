@@ -1,85 +1,33 @@
 import * as React from "react";
+import { calculatePrime, translations, formatNumberToString } from "./utils";
 
-const initialState = {
-  past: [],
-  present: 0,
-  future: []
-};
+export default function LocalizedPrimeNumbers() {
+  const count = 1;
+  const locale = "en-US";
 
-function reducer(state, action) {
-  const { past, present, future } = state;
-  switch(action.type) {
-  case "INCREMENT":
-    return {
-      past: [...past, present],
-      present: present + 1,
-      future: []
-    };
-  case "DECREMENT":
-    return {
-      past: [...past, present],
-      present: present - 1,
-      future: []
-    };
-  case "UNDO":
-    return {
-      // slice is used to remove the last element from the array
-      past: past.slice(0, past.length - 1),
-      present: past[past.length - 1],
-      future: [present, ...future]
-    };
-  case "REDO":
-    return {
-      past: [...past, present],
-      present: future[0],
-      // slice is used to remove the first element from the array
-      future: future.slice(1)
-    };
-    default:
-      return state;
-  }
-}
+  const handleClick = () => {};
+  const handleLocaleChange = () => {};
 
-export default function CounterWithUndoRedo() {
-  // const state = initialState;
-  const [state, dispatch] = React.useReducer(reducer, initialState);
-
-  const handleIncrement = () => {
-    dispatch({ type: "INCREMENT" })
-  };
-  const handleDecrement = () => {
-    dispatch({ type: "DECREMENT" })
-  };
-  const handleUndo = () => {
-    dispatch({ type: "UNDO" })
-  };
-  const handleRedo = () => {
-    dispatch({ type: "REDO" })
-  };
+  const nthprime = calculatePrime(count);
 
   return (
     <div>
-      <h1>Counter: {state.present}</h1>
-      <button className="link" onClick={handleIncrement}>
-        Increment
-      </button>
-      <button className="link" onClick={handleDecrement}>
-        Decrement
-      </button>
-      <button
-        className="link"
-        onClick={handleUndo}
-        disabled={!state.past.length}
-      >
-        Undo
-      </button>
-      <button
-        className="link"
-        onClick={handleRedo}
-        disabled={!state.future.length}
-      >
-        Redo
-      </button>
+      <header>
+        <select value={locale} onChange={handleLocaleChange}>
+          <option value="en-US">English (US)</option>
+          <option value="es-ES">Español (ES)</option>
+        </select>
+
+        <button className="primary" onClick={handleClick}>
+          {translations[locale].nextPrime}
+        </button>
+      </header>
+      <p>
+        {translations[locale].nthPrime(
+          formatNumberToString(count, locale),
+          nthprime
+        )}
+      </p>
     </div>
   );
 }
