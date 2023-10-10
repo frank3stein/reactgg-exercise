@@ -2,13 +2,19 @@ import * as React from "react";
 import { calculatePrime, translations, formatNumberToString } from "./utils";
 
 export default function LocalizedPrimeNumbers() {
-  const count = 1;
-  const locale = "en-US";
+  const [count, setCount] = React.useState(1);
+  const [locale, setLocale] = React.useState("en-US");
 
-  const handleClick = () => {};
-  const handleLocaleChange = () => {};
+  const handleClick = () => {
+    setCount(count + 1);
+  };
+  const handleLocaleChange = (e) => {
+    setLocale(e.target.value);
+  };
 
-  const nthprime = calculatePrime(count);
+  const nthprime = React.useMemo(() => {
+    return calculatePrime(count);
+  }, [count]);
 
   return (
     <div>
