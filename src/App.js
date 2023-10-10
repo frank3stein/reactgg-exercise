@@ -1,130 +1,85 @@
 import * as React from "react";
-import { createTask } from "./utils";
 
-const products = [
-  { id: 1, name: "Poké Ball", price: 10 },
-  { id: 2, name: "Great Ball", price: 20 },
-  { id: 3, name: "Ultra Ball", price: 30 }
-];
+const initialState = {
+  past: [],
+  present: 0,
+  future: []
+};
 
-function calculateTotal(cart) {
-  if(cart){
-    return cart.reduce((total, item) => {
-      return total + item.price * item.quantity;
-    }
-    , 0);
-  }
-  return 0;
-}
-
-const initialState = [];
-
-function reducer(cart, action) {
+function reducer(state, action) {
+  const { past, present, future } = state;
   switch(action.type) {
-    case "add": {
-      const { id } = action;
-      // check if item is already in cart
-      const itemInCart = cart.find((item) => item.id === id);
-      if (itemInCart) {
-        return cart.map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      } else {
-        // if item is not in cart, add it
-        const product = products.find((product) => product.id === id);
-        return [
-          ...cart,
-          {
-            ...product,
-            quantity: 1
-          }
-        ];
-      }
-    }
-    case "update": {
-      const { id, adjustment } = action;
-      return cart.map((item) =>(
-        item.id === id
-          ? { ...item, quantity: item.quantity + (adjustment === "increment" ? 1 : -1) }
-          : item
-      ));
-    }
-    case "remove": {
-      const { id } = action;
-      return cart.filter((item) => item.id !== id);
-    }
-    default: {
-      return cart;
-    }
+  case "INCREMENT":
+    return {
+      past: [...past, present],
+      present: present + 1,
+      future: []
+    };
+  case "DECREMENT":
+    return {
+      past: [...past, present],
+      present: present - 1,
+      future: []
+    };
+  case "UNDO":
+    return {
+      // slice is used to remove the last element from the array
+      past: past.slice(0, past.length - 1),
+      present: past[past.length - 1],
+      future: [present, ...future]
+    };
+  case "REDO":
+    return {
+      past: [...past, present],
+      present: future[0],
+      // slice is used to remove the first element from the array
+      future: future.slice(1)
+    };
+    default:
+      return state;
   }
 }
 
-export default function ShoppingCart() {
-  const [cart, dispatch] = React.useReducer(reducer, initialState);
+export default function CounterWithUndoRedo() {
+  // const state = initialState;
+  const [state, dispatch] = React.useReducer(reducer, initialState);
 
-  const handleAddToCart = (id) => dispatch({ type: "add", id });
-
-  const handleUpdateQuantity = (id, adjustment, quantity) => {
-    if (adjustment === "decrement" && quantity === 1) {
-      return dispatch({ type: "remove", id });
-    }
-    dispatch({
-      type: "update",
-      id,
-      adjustment
-    });
+  const handleIncrement = () => {
+    dispatch({ type: "INCREMENT" })
+  };
+  const handleDecrement = () => {
+    dispatch({ type: "DECREMENT" })
+  };
+  const handleUndo = () => {
+    dispatch({ type: "UNDO" })
+  };
+  const handleRedo = () => {
+    dispatch({ type: "REDO" })
   };
 
   return (
-    <main>
-      <h1>Poké Mart</h1>
-      <section>
-        <div>
-          <ul className="products">
-            {products.map((product) => (
-              <li key={product.id}>
-                {product.name} - ${product.price}
-                <button
-                  className="primary"
-                  onClick={() => handleAddToCart(product.id)}
-                >
-                  Add to cart
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-      <hr />
-      <aside>
-        <div>
-          <h2>Shopping Cart</h2>
-          <ul>
-            {cart.map((item) => (
-              <li key={item.id}>
-                {item.name}
-                <div>
-                  <button
-                    onClick={() => handleUpdateQuantity(item.id, "decrement", item.quantity)}
-                  >
-                    -
-                  </button>
-                  {item.quantity}
-                  <button
-                    onClick={() => handleUpdateQuantity(item.id, "increment")}
-                  >
-                    +
-                  </button>
-                </div>
-              </li>
-            ))}
-            {!cart.length && <li>Cart is empty</li>}
-          </ul>
-        </div>
-        <hr />
-
-        <h3>Total: ${calculateTotal(cart)}</h3>
-      </aside>
-    </main>
+    <div>
+      <h1>Counter: {state.present}</h1>
+      <button className="link" onClick={handleIncrement}>
+        Increment
+      </button>
+      <button className="link" onClick={handleDecrement}>
+        Decrement
+      </button>
+      <button
+        className="link"
+        onClick={handleUndo}
+        disabled={!state.past.length}
+      >
+        Undo
+      </button>
+      <button
+        className="link"
+        onClick={handleRedo}
+        disabled={!state.future.length}
+      >
+        Redo
+      </button>
+    </div>
   );
-            }
+}
