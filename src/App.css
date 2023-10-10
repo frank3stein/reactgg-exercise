@@ -1,45 +1,92 @@
 /* Your CSS goes here */
 
-h1 {
-  text-align: center;
+section {
+  max-width: 400px;
+  margin: auto;
 }
 
-progress {
-  accent-color: var(--yellow);
-  width: 100%;
+header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.link {
+  color: var(--beige) !important;
 }
 
 form {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px;
+  background-color: var(--charcoal);
+  border-radius: 8px;
+}
+
+form:focus-within {
+  outline: 1px solid var(--border-color);
+}
+
+form button {
+  flex: 1;
+  white-space: nowrap;
+}
+
+input {
+  width: 100%;
+  background: var(--charcoal);
+}
+
+input::placeholder {
+  color: rgb(249, 244, 218, 0.5);
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+  margin-top: 24px;
   display: grid;
   gap: 16px;
 }
 
-button {
-  width: 100%;
-}
-
-table {
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--purple);
+  padding: 8px 16px;
+  border-radius: 8px;
   font-size: 14px;
-  font-family: monospace;
+}
+
+li div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status {
+  width: 24px;
+  height: 24px;
+  padding: 0px;
+  border-radius: 50%;
+  border: 1px solid var(--beige);
+  background: transparent;
   position: relative;
-  width: 100%;
-  border: 1px solid var(--charcoal);
 }
 
-thead th:not(:first-child) {
-  text-align: left;
+.status.completed {
+  background: var(--yellow);
+  border-color: var(--charcoal);
 }
 
-th,
-td {
-  padding: 4px 8px;
-}
-
-th {
-  background: var(--charcoal);
-}
-
-td {
-  border: 1px solid var(--charcoal);
-  width: 100%;
+.status.completed:after {
+  content: "\2713";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
